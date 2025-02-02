@@ -50,8 +50,8 @@ function App() {
       )}
 
       <div className="flex-1 flex flex-col">
-        <header className="h-12 bg-[#313338] border-b border-[#1e1f22] flex items-center justify-between px-4">
-          <h2 className="font-semibold text-white">
+        <header className="h-12 bg-[var(--bg-primary)] border-b border-[#1e1f22] flex items-center justify-between px-4">
+          <h2 className="font-semibold text-[var(--text-primary)]">
             {selectedChannel ? '#general' : 'Select a channel'}
           </h2>
 

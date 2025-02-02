@@ -18,8 +18,10 @@ export function ServerList({ selectedServer, onSelectServer }: {
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [serverName, setServerName] = useState('');
+  const [loading, setLoading] = useState(false);
   const [servers] = useCollectionData<Server>(
-    firestore.collection('servers').where('members', 'array-contains', auth.currentUser?.uid),
+    firestore.collection('servers'),
+    // .where('members', 'array-contains', auth.currentUser?.uid),
     { idField: 'id' }
   );
 
@@ -34,6 +36,7 @@ export function ServerList({ selectedServer, onSelectServer }: {
     e.preventDefault();
     if (!auth.currentUser || !serverName.trim()) return;
 
+    setLoading(true);
     try {
       const serverId = await createServer(serverName, auth.currentUser.uid);
       onSelectServer(serverId);
@@ -42,12 +45,14 @@ export function ServerList({ selectedServer, onSelectServer }: {
       setServerName('');
     } catch (error) {
       toast.error('Failed to create server');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <div className="w-[72px] bg-[#1e1f22] h-screen flex flex-col items-center py-3 space-y-2">
+      <div className="w-[72px] h-screen flex flex-col items-center py-3 space-y-2 bg-[var(--bg-primary)]">
         {servers?.map((server) => (
           <motion.button
             key={server.id}
@@ -63,7 +68,7 @@ export function ServerList({ selectedServer, onSelectServer }: {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="w-12 h-12 rounded-full bg-[#313338] flex items-center justify-center text-[#3ba55c] hover:bg-[#3ba55c] hover:text-white transition-all"
+          className="w-12 h-12 rounded-full bg-[#313338] flex items-center justify-center text-[#3ba55c] hover:bg-[#3ba55c] hover:text-white transition-all border-white border-[0.1rem]"
         >
           <Plus className="w-6 h-6" />
         </button>
@@ -96,9 +101,10 @@ export function ServerList({ selectedServer, onSelectServer }: {
             </div>
             <button
               type="submit"
+              disabled={loading || !serverName.trim()}
               className="w-full bg-[#5865f2] text-white py-2 px-4 rounded-md font-medium hover:bg-[#4752c4] transition-colors"
             >
-              Create Server
+              {loading ? 'Creating...' : 'Create Server'}
             </button>
           </div>
         </form>

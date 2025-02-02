@@ -19,6 +19,7 @@ export function ChannelList({ serverId, selectedChannel, onSelectChannel }: {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState<'text' | 'voice'>('text');
+  const [loading, setLoading] = useState(false);
 
   const [channels] = useCollectionData<Channel>(
     firestore.collection('channels').where('serverId', '==', serverId),
@@ -30,12 +31,19 @@ export function ChannelList({ serverId, selectedChannel, onSelectChannel }: {
     if (channels?.length && !selectedChannel) {
       onSelectChannel(channels[0].id);
     }
-  }, [channels, selectedChannel, onSelectChannel]);
+    // on serverId change select first channel
+    if (channels?.length && selectedChannel) {
+      const selectedChannelIndex = channels.findIndex((channel) => channel.id === selectedChannel);
+      if (selectedChannelIndex === -1) {
+        onSelectChannel(channels[0].id);
+      }
+    }
+  }, [channels, selectedChannel, onSelectChannel, serverId]);
 
   const handleCreateChannel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!channelName.trim()) return;
-
+    setLoading(true);
     try {
       await createChannel(serverId, channelName, channelType);
       toast.success('Channel created successfully!');
@@ -44,12 +52,14 @@ export function ChannelList({ serverId, selectedChannel, onSelectChannel }: {
       setChannelType('text');
     } catch (error) {
       toast.error('Failed to create channel');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <div className="w-60 bg-[#2b2d31] h-screen p-3">
+      <div className="w-60 bg-[#2b2d31] h-screen p-3 bg-[var(--bg-primary)]">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-[var(--text-primary)]">Channels</h2>
           <button
@@ -65,8 +75,8 @@ export function ChannelList({ serverId, selectedChannel, onSelectChannel }: {
             <button
               key={channel.id}
               onClick={() => onSelectChannel(channel.id)}
-              className={`w-full flex items-center space-x-2 px-2 py-1 rounded hover:bg-[#35373c] transition-colors
-                ${selectedChannel === channel.id ? 'bg-[#35373c] text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}
+              className={`w-full flex items-center space-x-2 px-2 py-1 rounded hover:bg-[#76828a] transition-colors
+                ${selectedChannel === channel.id ? 'bg-[#a7b7c2] text-[var(--text-primary)]' : 'text-[var(--text-primary)]'}`}
             >
               {channel.type === 'text' ? (
                 <Hash className="w-5 h-5" />
@@ -134,9 +144,10 @@ export function ChannelList({ serverId, selectedChannel, onSelectChannel }: {
             </div>
             <button
               type="submit"
+              disabled={!channelName.trim() || loading}
               className="w-full bg-[#5865f2] text-white py-2 px-4 rounded-md font-medium hover:bg-[#4752c4] transition-colors"
             >
-              Create Channel
+              {loading ? 'Creating...' : 'Create Channel'}
             </button>
           </div>
         </form>
