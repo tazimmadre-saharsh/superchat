@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef, useEffect, useState } from "react";
 import { MessageSquare, LogOut, Send, Menu, Hash, Smile, PlusCircle, AtSign, Gift } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -253,7 +254,7 @@ function Chatroom() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'key=YOUR_SERVER_KEY'
+            'Authorization': 'key=AAAAkCjvQXI:APA91bEX4TLnxvBq-tTsLhHe9at-kRa3PbtSTXvEBBDMqLcPGfNF9lfxc9A7vAxTgY1fSY0PcE5OlyECRm68kCOlcTU21-y4tafJ40NgfKVzJzugCEFKCF3LiAGKXodJVO8JdNTV_2QH'
           },
           body: JSON.stringify({
             to: doc.data().fcmToken,
