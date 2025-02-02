@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  @apply antialiased;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Light mode styles */
+:root[class~="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f2f3f5;
+  --text-primary: #2e3338;
+  --text-secondary: #747f8d;
+}
+
+/* Dark mode styles */
+:root[class~="dark"] {
+  --bg-primary: #313338;
+  --bg-secondary: #2b2d31;
+  --text-primary: #ffffff;
+  --text-secondary: #949ba4;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
